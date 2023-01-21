@@ -1,6 +1,8 @@
 ﻿using BrickAndMortar.Core.Loaders.UILoading;
 using BrickAndMortar.Core.Systems.ResourceSystem;
+using System;
 using System.Collections.Generic;
+using Terraria.ID;
 using Terraria.UI;
 
 namespace BrickAndMortar.Content.GUI
@@ -9,6 +11,8 @@ namespace BrickAndMortar.Content.GUI
 	{
 		public ResourceBar aurumBar;
 		public ResourceBar lifeforceBar;
+
+		public StorageUpgradeButton upgradeButton;
 
 		public override bool Visible => Main.playerInventory;
 
@@ -19,8 +23,15 @@ namespace BrickAndMortar.Content.GUI
 
 		public override void OnInitialize()
 		{
-			AddResourceBar(ref aurumBar, new Vector2(210, 270), "BrickAndMortar/Assets/GUI/AurumIcon", new Color(255, 200, 20));
-			AddResourceBar(ref lifeforceBar, new Vector2(340, 270), "BrickAndMortar/Assets/GUI/LifeforceIcon", new Color(20, 220, 255));
+			AddResourceBar(ref aurumBar, new Vector2(210, 270), "BrickAndMortar/Assets/GUI/AurumIcon", "Aurum", new Color(255, 200, 20));
+			AddResourceBar(ref lifeforceBar, new Vector2(340, 270), "BrickAndMortar/Assets/GUI/LifeforceIcon", "Lifeforce", new Color(20, 220, 255));
+
+			upgradeButton = new StorageUpgradeButton();
+			upgradeButton.Left.Set(200, 0);
+			upgradeButton.Top.Set(310, 0);
+			upgradeButton.Width.Set(32, 0);
+			upgradeButton.Height.Set(32, 0);
+			Append(upgradeButton);
 		}
 
 		public override void Update(GameTime gameTime)
@@ -43,9 +54,9 @@ namespace BrickAndMortar.Content.GUI
 		/// <param name="pos">Where the element should be positioned on the screen</param>
 		/// <param name="texture">The path to the icon texture of the bar</param>
 		/// <param name="color">The color of the bar's fill</param>
-		private void AddResourceBar(ref ResourceBar element, Vector2 pos, string texture, Color color)
+		private void AddResourceBar(ref ResourceBar element, Vector2 pos, string texture, string hoverText, Color color)
 		{
-			element = new ResourceBar(texture, color);
+			element = new ResourceBar(texture, hoverText, color);
 			element.Left.Set(pos.X, 0);
 			element.Top.Set(pos.Y, 0);
 			element.Width.Set(100, 0);
@@ -58,6 +69,7 @@ namespace BrickAndMortar.Content.GUI
 	internal class ResourceBar : UIElement
 	{
 		readonly string iconTexture;
+		readonly string hoverText;
 		Color color;
 
 		public int fillTarget;
@@ -66,19 +78,26 @@ namespace BrickAndMortar.Content.GUI
 
 		public float VisiblePercent => visibleFill / (float)maxFill;
 
-		public ResourceBar(string iconTexture, Color color)
+		public ResourceBar(string iconTexture, string hoverText, Color color)
 		{
 			this.iconTexture = iconTexture;
+			this.hoverText = hoverText;
 			this.color = color;
 		}
 
 		public override void Update(GameTime gameTime)
 		{
 			if (visibleFill < fillTarget)
-				visibleFill++;
+			{
+				int diff = fillTarget - visibleFill;
+				visibleFill += Math.Max(1, diff / 10);
+			}
 
 			if (visibleFill > fillTarget)
-				visibleFill--;
+			{
+				int diff = visibleFill - fillTarget;
+				visibleFill -= Math.Max(1, diff / 10);
+			}
 		}
 
 		public override void Draw(SpriteBatch spriteBatch)
@@ -101,6 +120,41 @@ namespace BrickAndMortar.Content.GUI
 			Vector2 textPos = GetDimensions().ToRectangle().Center();
 
 			Utils.DrawBorderString(spriteBatch, $"{visibleFill}/{maxFill}", textPos, Color.White, 0.7f, 0.5f, 0.5f);
+
+			if (IsMouseHovering)
+				Utils.DrawBorderString(spriteBatch, hoverText + $": {visibleFill}/{maxFill}", Main.MouseScreen + Vector2.One * 16, Color.White, 1f);
+		}
+	}
+
+	internal class StorageUpgradeButton : UIElement
+	{
+		public override void Draw(SpriteBatch spriteBatch)
+		{
+			Texture2D tex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/StorageUpgradeButton").Value;
+			Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+
+			spriteBatch.Draw(tex, pos, Color.White);
+
+			if (IsMouseHovering)
+			{
+				ResourcePlayer mp = Main.LocalPlayer.GetModPlayer<ResourcePlayer>();
+
+				ResourceSpending.DrawCost(spriteBatch, Main.MouseScreen + Vector2.One * 16, "upgrade storage capacity", mp.GetStorageUpgradeCost(), 0);
+
+				Main.LocalPlayer.mouseInterface = true;
+			}
+		}
+
+		public override void Click(UIMouseEvent evt)
+		{
+			ResourcePlayer mp = Main.LocalPlayer.GetModPlayer<ResourcePlayer>();
+
+			if (ResourceSpending.TrySpendAurum(Main.LocalPlayer, mp.GetStorageUpgradeCost()))
+			{
+				mp.storageLevel++;
+				Main.NewText($"Your resource storage has been upgraded to level {mp.storageLevel + 1}!", Color.Yellow);
+				Terraria.Audio.SoundEngine.PlaySound(SoundID.ResearchComplete);
+			}
 		}
 	}
 }

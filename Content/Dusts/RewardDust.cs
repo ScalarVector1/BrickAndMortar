@@ -26,8 +26,6 @@
 			}
 
 			Vector2 currentCenter = dust.position + Vector2.One.RotatedBy(dust.rotation) * 32 * dust.scale;
-
-			dust.scale *= 0.95f;
 			Vector2 nextCenter = dust.position + Vector2.One.RotatedBy(dust.rotation + 0.06f) * 32 * dust.scale;
 
 			dust.rotation += 0.06f;
@@ -38,19 +36,28 @@
 			if (dust.customData is Player)
 			{
 				var player = dust.customData as Player;
-				dust.velocity += (player.Center - dust.position) * 0.01f;
+				dust.velocity += Vector2.Normalize(player.Center - dust.position) * 0.5f;
 
-				if (dust.velocity.Length() > 10)
-					dust.velocity = Vector2.Normalize(dust.velocity) * 9.99f;
+				if (dust.velocity.Length() > 20)
+					dust.velocity = Vector2.Normalize(dust.velocity) * 19.99f;
+
+				float dist = Vector2.Distance(player.Center, dust.position);
+
+				if (dist < 60)
+				{
+					dust.velocity *= 0.85f;
+					dust.scale *= 0.95f;
+				}
 			}
 
 			dust.position += dust.velocity;
-			dust.color *= 0.95f;
+			dust.fadeIn -= 0.001f;
+			dust.velocity *= 0.95f;
 
 			if (!dust.noLight)
 				Lighting.AddLight(dust.position, dust.color.ToVector3());
 
-			if (dust.scale < 0.05f)
+			if (dust.fadeIn < 0.1f || dust.scale < 0.1f)
 				dust.active = false;
 
 			return false;
