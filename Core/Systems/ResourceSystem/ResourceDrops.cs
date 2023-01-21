@@ -20,13 +20,13 @@ namespace BrickAndMortar.Core.Systems.ResourceSystem
 
 			for (int k = 0; k < amountBig; k++)
 			{
-				var d = Dust.NewDustPerfect(origin, ModContent.DustType<RewardDust>(), Vector2.One.RotatedByRandom(6.28f) * Main.rand.NextFloat(5f), 0, color, 2f);
+				var d = Dust.NewDustPerfect(origin, ModContent.DustType<RewardDust>(), Vector2.One.RotatedByRandom(6.28f) * Main.rand.NextFloat(5f), 0, color, 1.3f);
 				d.customData = recipient;
 			}
 
 			for (int k = 0; k < amountMedium; k++)
 			{
-				var d = Dust.NewDustPerfect(origin, ModContent.DustType<RewardDust>(), Vector2.One.RotatedByRandom(6.28f) * Main.rand.NextFloat(5f), 0, color * 0.75f, 0.75f);
+				var d = Dust.NewDustPerfect(origin, ModContent.DustType<RewardDust>(), Vector2.One.RotatedByRandom(6.28f) * Main.rand.NextFloat(5f), 0, color * 0.75f, 0.65f);
 				d.customData = recipient;
 			}
 
