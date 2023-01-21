@@ -9,6 +9,8 @@ namespace BrickAndMortar.Helpers
 {
 	public static partial class Helper
 	{
+		public static Vector2 TileAdj => (Lighting.Mode == Terraria.Graphics.Light.LightMode.Retro || Lighting.Mode == Terraria.Graphics.Light.LightMode.Trippy) ? Vector2.Zero : Vector2.One * 12 * 16;
+
 		public static Rectangle ToRectangle(this Vector2 vector)
 		{
 			return new Rectangle(0, 0, (int)vector.X, (int)vector.Y);

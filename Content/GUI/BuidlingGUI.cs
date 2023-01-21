@@ -5,9 +5,14 @@ using Terraria.UI;
 
 namespace BrickAndMortar.Content.GUI
 {
-	internal class BuidlingGUI : SmartUIState
+	internal class BuildingGUI : SmartUIState
 	{
 		public static Building building;
+
+		public UpgradeButton upgradeButton;
+		public CloseButton closeButton;
+
+		private int bgHeight;
 
 		public override bool Visible => building != null;
 
@@ -16,10 +21,36 @@ namespace BrickAndMortar.Content.GUI
 			return layers.Count;
 		}
 
+		private void SetButton(UIElement element, Vector2 pos)
+		{
+			element.Left.Set(pos.X, 0);
+			element.Top.Set(pos.Y, 0);
+			element.Width.Set(32, 0);
+			element.Height.Set(32, 0);
+		}
+
+		public override void OnInitialize()
+		{
+			upgradeButton = new();
+			Append(upgradeButton);
+
+			closeButton = new();
+			Append(closeButton);
+		}
+
 		public override void Update(GameTime gameTime)
 		{
+			if (building is null)
+				return;
+
 			if (Vector2.Distance(Main.LocalPlayer.Center, building.Center) > 500)
 				building = null;
+
+			SetButton(closeButton, building.Center + new Vector2(-150, -300 + bgHeight + 16) - Main.screenPosition);
+			SetButton(upgradeButton, building.Center + new Vector2(150 - 32, -300 + bgHeight + 16) - Main.screenPosition);
+
+			Recalculate();
+			base.Update(gameTime);
 		}
 
 		public override void Draw(SpriteBatch spriteBatch)
@@ -29,11 +60,11 @@ namespace BrickAndMortar.Content.GUI
 
 			Vector2 pos = building.Center + new Vector2(-150, -300) - Main.screenPosition;
 
-			var bgTarget = new Rectangle((int)pos.X, (int)pos.Y, 300, 600);
+			var bgTarget = new Rectangle((int)pos.X, (int)pos.Y, 300, bgHeight);
 
 			Texture2D bg = Terraria.GameContent.TextureAssets.MagicPixel.Value;
 
-			spriteBatch.Draw(bg, bgTarget, Color.Black * 0.5f);
+			spriteBatch.Draw(bg, bgTarget, new Color(50, 50, 100) * 0.5f);
 
 			Utils.DrawBorderString(spriteBatch, building.FriendlyName, pos + Vector2.One * 8, Color.White, 1.2f);
 
@@ -45,7 +76,57 @@ namespace BrickAndMortar.Content.GUI
 			building.SetStatLines();
 			float y = building.DrawStatLines(spriteBatch, pos + new Vector2(8, 48 + font.MeasureString(info).Y));
 
-			building.DrawCost(spriteBatch, new Vector2(pos.X + 8, y + 24));
+			bgHeight = (int)(y + 24 - pos.Y);
+
+			base.Draw(spriteBatch);
+		}
+	}
+
+	internal class UpgradeButton : UIElement
+	{
+		public override void Draw(SpriteBatch spriteBatch)
+		{
+			if (BuildingGUI.building != null)
+			{
+				Texture2D tex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/Upgrade").Value;
+				Vector2 pos = GetDimensions().Position();
+
+				spriteBatch.Draw(tex, pos, Color.White);
+
+				if (IsMouseHovering)
+				{
+					if (BuildingGUI.building.building)
+						Utils.DrawBorderString(spriteBatch, "Already upgrading...", Main.MouseScreen + Vector2.One * 16, Color.White);
+					else
+						BuildingGUI.building.DrawCost(spriteBatch, Main.MouseScreen + Vector2.One * 16);
+				}
+			}
+		}
+
+		public override void Click(UIMouseEvent evt)
+		{
+			if (BuildingGUI.building != null)
+				BuildingGUI.building.TryUpgrade(Main.LocalPlayer);
+		}
+	}
+
+	internal class CloseButton : UIElement
+	{
+		public override void Draw(SpriteBatch spriteBatch)
+		{
+			if (BuildingGUI.building != null)
+			{
+				Texture2D tex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/Close").Value;
+				Vector2 pos = GetDimensions().Position();
+
+				spriteBatch.Draw(tex, pos, Color.White);
+			}
+		}
+
+		public override void Click(UIMouseEvent evt)
+		{
+			if (BuildingGUI.building != null)
+				BuildingGUI.building = null;
 		}
 	}
 }

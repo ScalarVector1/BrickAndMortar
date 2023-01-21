@@ -176,6 +176,8 @@ namespace BrickAndMortar.Content.Buildings
 			var source = new Rectangle(level * Width * 16, 0, Width * 16, Height * 16);
 
 			spriteBatch.Draw(tex, position, source, lightColor);
+
+			DrawBuildTime(spriteBatch, position + new Vector2(Width * 16 / 2 - 42, -Height * 16 - 16));
 		}
 
 		/// <summary>
@@ -241,15 +243,36 @@ namespace BrickAndMortar.Content.Buildings
 		{
 			if (building)
 			{
-				long time = DateTimeOffset.Now.ToUnixTimeSeconds();
-				long diff = GetBuildTime() - time;
+				Texture2D iconTex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/Clock").Value;
+				Texture2D barTex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/BarEmpty").Value;
+				Texture2D fillTex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/BarFill").Value;
 
-				int hours = (int)(diff / 216000);
-				int minutes = (int)(diff % 216000) / 360;
+				long time = DateTimeOffset.Now.ToUnixTimeSeconds();
+
+				float visiblePercent = (time - buildStartTime) / (float)GetBuildTime();
+
+				var fillTarget = new Rectangle((int)pos.X, (int)pos.Y, 100, 32);
+				fillTarget.Width = (int)(fillTarget.Width * visiblePercent);
+
+				var fillSource = new Rectangle(0, 0, fillTarget.Width, fillTarget.Height);
+
+				spriteBatch.Draw(barTex, pos, Color.White);
+				spriteBatch.Draw(fillTex, fillTarget, fillSource, new Color(50, 255, 150));
+
+				spriteBatch.Draw(iconTex, pos + new Vector2(-24, -2), Color.White);
+
+				Vector2 textPos = pos + new Vector2(50, 16);
+
+				long diff = buildStartTime + GetBuildTime() - time;
+
+				int minutes = (int)(diff / 60);
 				int seconds = (int)(diff % 60);
 
-				string timer = $"Building {hours}:{minutes}:{seconds}";
-				Utils.DrawBorderString(spriteBatch, timer, pos, Color.White, 1, 0.5f, 0.5f);
+				string secAdj = seconds < 10 ? "0" : "";
+				string minAdj = minutes < 10 ? "0" : "";
+
+				string timer = $"{minAdj}{minutes}:{secAdj}{seconds}";
+				Utils.DrawBorderString(spriteBatch, timer, textPos, Color.White, 0.7f, 0.5f, 0.5f);
 			}
 		}
 
@@ -260,6 +283,9 @@ namespace BrickAndMortar.Content.Buildings
 		/// <returns>If the upgrade was successful or not</returns>
 		public bool TryUpgrade(Player player)
 		{
+			if (building)
+				return false;
+
 			ResourcePlayer mp = player.GetModPlayer<ResourcePlayer>();
 
 			if (GetAurumCost() > 0 && GetLifeforceCost() > 0)
@@ -356,7 +382,7 @@ namespace BrickAndMortar.Content.Buildings
 				Building instance = BuildingInstance(new Point16(i, j));
 
 				if (instance != null)
-					instance.DrawBuilding(spriteBatch, new Vector2(i, j) * 16 - Main.screenPosition, Lighting.GetColor(new Point(i, j)));
+					instance.DrawBuilding(spriteBatch, new Vector2(i, j) * 16 - Main.screenPosition + Helpers.Helper.TileAdj, Lighting.GetColor(new Point(i, j)));
 			}
 
 			return false;
@@ -369,7 +395,7 @@ namespace BrickAndMortar.Content.Buildings
 			i -= tile.TileFrameX / 18;
 			j -= tile.TileFrameY / 18;
 
-			BuidlingGUI.building = BuildingSystem.byPosition[new Point16(i, j)];
+			BuildingGUI.building = BuildingSystem.byPosition[new Point16(i, j)];
 
 			return true;
 		}
