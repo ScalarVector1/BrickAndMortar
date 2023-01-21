@@ -66,7 +66,16 @@ namespace BrickAndMortar.Core.Systems.BuildingSystem
 				buildings.ForEach(n => n.PassiveBoost(player));
 			}
 
-			buildings.ForEach(n => n.UpdateBuildTimes());
+			buildings.ForEach(n =>
+			{
+				if (!n.IsTileValid(Framing.GetTileSafely(n.position)))
+				{
+					RemoveBuilding(n);
+					return;
+				}
+
+				n.UpdateBuildTimes();
+			});
 		}
 
 		public override void SaveWorldData(TagCompound tag)

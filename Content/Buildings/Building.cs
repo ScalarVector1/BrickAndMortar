@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
 
@@ -108,7 +109,7 @@ namespace BrickAndMortar.Content.Buildings
 		{
 			BuildingSystem.typeDummies[Name] = this;
 
-			mod.AddContent(new BuildingTile(Name + "_tile", new FurnitureLoadData(Width, Height, 0, default, false, Color.White), 0, $"BrickAndMortar/Assets/Buildings/{Name}", Name));
+			mod.AddContent(new BuildingTile(Name + "_tile", new FurnitureLoadData(Width, Height, 0, SoundID.Tink, false, Color.White), 0, $"BrickAndMortar/Assets/Buildings/{Name}", Name));
 			mod.AddContent(new BuildingItem(Name + "_tile", Name));
 		}
 
@@ -122,7 +123,7 @@ namespace BrickAndMortar.Content.Buildings
 		/// </summary>
 		/// <param name="tile">The tile which the building is supposedly located at</param>
 		/// <returns>If the building can continue to exist at that tile or not</returns>
-		public virtual bool IsTileValid(Tile tile) { return true; }
+		public virtual bool IsTileValid(Tile tile) { return tile.TileType == BrickAndMortar.instance.Find<ModTile>(Name + "_tile").Type; }
 
 		/// <summary>
 		/// Occurs before passive boosts are applied. Used for things like buffing other buildings.
@@ -445,6 +446,11 @@ namespace BrickAndMortar.Content.Buildings
 
 			tooltips.Add(new TooltipLine(Mod, "Info", $"{Helpers.Helper.WrapString(Building.Info, 400, Terraria.GameContent.FontAssets.MouseText.Value, 1f)}"));
 			tooltips.Add(new TooltipLine(Mod, "MaxCount", $"Placed: {BuildingSystem.buildings.Count(n => n.GetType() == Building.GetType())}/{Building.GetBuildCount()}"));
+		}
+
+		public override bool CanUseItem(Player player)
+		{
+			return BuildingSystem.buildings.Count(n => n.GetType() == Building.GetType()) < Building.GetBuildCount();
 		}
 	}
 }
