@@ -56,7 +56,7 @@ namespace BrickAndMortar.Content.Buildings
 
 		public Point16 position;
 
-		public bool building;
+		public bool underConstruction;
 		public long buildStartTime;
 
 		public List<Statline> statlines;
@@ -98,6 +98,11 @@ namespace BrickAndMortar.Content.Buildings
 		/// Height of the building in tiles
 		/// </summary>
 		public abstract int Height { get; }
+
+		/// <summary>
+		/// Gets the max level of this building. By default is always 4.
+		/// </summary>
+		public virtual int MaxLevel => 4;
 
 		public void Load(Mod mod)
 		{
@@ -165,6 +170,11 @@ namespace BrickAndMortar.Content.Buildings
 		public virtual void SetStatLines() { }
 
 		/// <summary>
+		/// Sets the stat lines for displaying this building's next upgrade
+		/// </summary>
+		public virtual void SetNextStatLines() { }
+
+		/// <summary>
 		/// Allows you to modify or override how the building is drawn. Base call draws a frame based on level and width/height.
 		/// </summary>
 		/// <param name="spriteBatch"></param>
@@ -206,7 +216,7 @@ namespace BrickAndMortar.Content.Buildings
 			tag["type"] = GetType().ToString(); //used in BuildingSystem loader to create instance
 			tag["position"] = position.ToVector2();
 			tag["level"] = level;
-			tag["building"] = building;
+			tag["building"] = underConstruction;
 			tag["buildStartTime"] = buildStartTime;
 		}
 
@@ -218,7 +228,7 @@ namespace BrickAndMortar.Content.Buildings
 		{
 			position = tag.Get<Vector2>("position").ToPoint16();
 			level = tag.GetInt("level");
-			building = tag.GetBool("building");
+			underConstruction = tag.GetBool("building");
 			buildStartTime = tag.GetLong("buildStartTime");
 		}
 
@@ -226,10 +236,10 @@ namespace BrickAndMortar.Content.Buildings
 		{
 			long time = DateTimeOffset.Now.ToUnixTimeSeconds();
 
-			if (building && time >= buildStartTime + GetBuildTime())
+			if (underConstruction && time >= buildStartTime + GetBuildTime())
 			{
 				level++;
-				building = false;
+				underConstruction = false;
 				buildStartTime = 0;
 			}
 		}
@@ -241,7 +251,7 @@ namespace BrickAndMortar.Content.Buildings
 
 		public void DrawBuildTime(SpriteBatch spriteBatch, Vector2 pos)
 		{
-			if (building)
+			if (underConstruction)
 			{
 				Texture2D iconTex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/Clock").Value;
 				Texture2D barTex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/BarEmpty").Value;
@@ -283,7 +293,7 @@ namespace BrickAndMortar.Content.Buildings
 		/// <returns>If the upgrade was successful or not</returns>
 		public bool TryUpgrade(Player player)
 		{
-			if (building)
+			if (underConstruction)
 				return false;
 
 			ResourcePlayer mp = player.GetModPlayer<ResourcePlayer>();
@@ -292,7 +302,7 @@ namespace BrickAndMortar.Content.Buildings
 			{
 				if (ResourceSpending.TrySpendBoth(player, GetAurumCost(), GetLifeforceCost()))
 				{
-					building = true;
+					underConstruction = true;
 					buildStartTime = DateTimeOffset.Now.ToUnixTimeSeconds();
 					return true;
 				}
@@ -301,7 +311,7 @@ namespace BrickAndMortar.Content.Buildings
 			{
 				if (ResourceSpending.TrySpendAurum(player, GetAurumCost()))
 				{
-					building = true;
+					underConstruction = true;
 					buildStartTime = DateTimeOffset.Now.ToUnixTimeSeconds();
 					return true;
 				}
@@ -310,14 +320,14 @@ namespace BrickAndMortar.Content.Buildings
 			{
 				if (ResourceSpending.TrySpendLifeforce(player, GetLifeforceCost()))
 				{
-					building = true;
+					underConstruction = true;
 					buildStartTime = DateTimeOffset.Now.ToUnixTimeSeconds();
 					return true;
 				}
 			}
 			else //upgrade is marked as free
 			{
-				building = true;
+				underConstruction = true;
 				buildStartTime = DateTimeOffset.Now.ToUnixTimeSeconds();
 				return true;
 			}

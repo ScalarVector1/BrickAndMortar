@@ -18,7 +18,7 @@ namespace BrickAndMortar.Content.GUI
 
 		public override int InsertionIndex(List<GameInterfaceLayer> layers)
 		{
-			return layers.Count;
+			return layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
 		}
 
 		private void SetButton(UIElement element, Vector2 pos)
@@ -64,16 +64,21 @@ namespace BrickAndMortar.Content.GUI
 
 			Texture2D bg = Terraria.GameContent.TextureAssets.MagicPixel.Value;
 
-			spriteBatch.Draw(bg, bgTarget, new Color(50, 50, 100) * 0.5f);
+			spriteBatch.Draw(bg, bgTarget, new Color(50, 50, 100) * 0.75f);
 
-			Utils.DrawBorderString(spriteBatch, building.FriendlyName, pos + Vector2.One * 8, Color.White, 1.2f);
+			Utils.DrawBorderString(spriteBatch, $"{building.FriendlyName} (Level {building.level + 1})", pos + Vector2.One * 8, Color.White, 1.2f);
 
 			ReLogic.Graphics.DynamicSpriteFont font = Terraria.GameContent.FontAssets.MouseText.Value;
 			string info = Helpers.Helper.WrapString(building.Info, 220, font, 0.8f);
 			Utils.DrawBorderString(spriteBatch, info, pos + new Vector2(8, 48), Color.White, 0.8f);
 
 			building.statlines = new();
-			building.SetStatLines();
+
+			if (building.level < building.MaxLevel && (upgradeButton.IsMouseHovering || building.underConstruction))
+				building.SetNextStatLines();
+			else
+				building.SetStatLines();
+
 			float y = building.DrawStatLines(spriteBatch, pos + new Vector2(8, 48 + font.MeasureString(info).Y));
 
 			bgHeight = (int)(y + 24 - pos.Y);
@@ -95,7 +100,9 @@ namespace BrickAndMortar.Content.GUI
 
 				if (IsMouseHovering)
 				{
-					if (BuildingGUI.building.building)
+					if (BuildingGUI.building.level >= BuildingGUI.building.MaxLevel)
+						Utils.DrawBorderString(spriteBatch, "Max level!", Main.MouseScreen + Vector2.One * 16, Color.White);
+					else if (BuildingGUI.building.underConstruction)
 						Utils.DrawBorderString(spriteBatch, "Already upgrading...", Main.MouseScreen + Vector2.One * 16, Color.White);
 					else
 						BuildingGUI.building.DrawCost(spriteBatch, Main.MouseScreen + Vector2.One * 16);
@@ -105,6 +112,9 @@ namespace BrickAndMortar.Content.GUI
 
 		public override void Click(UIMouseEvent evt)
 		{
+			if (BuildingGUI.building.level >= BuildingGUI.building.MaxLevel)
+				return;
+
 			if (BuildingGUI.building != null)
 				BuildingGUI.building.TryUpgrade(Main.LocalPlayer);
 		}
