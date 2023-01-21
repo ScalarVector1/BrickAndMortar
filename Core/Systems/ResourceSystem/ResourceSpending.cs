@@ -96,7 +96,7 @@
 			{
 				Texture2D lifeforceTex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/LifeforceIcon").Value;
 				spriteBatch.Draw(lifeforceTex, pos, null, Color.White, 0, Vector2.Zero, 0.5f, 0, 0);
-				Utils.DrawBorderString(spriteBatch, $"Lifeforce: {aurumAmount}", pos + Vector2.UnitX * 20, mp.aurumAmount >= aurumAmount ? Color.White : Color.Red);
+				Utils.DrawBorderString(spriteBatch, $"Lifeforce: {lifeforceAmount}", pos + Vector2.UnitX * 20, mp.lifeforceAmount >= lifeforceAmount ? Color.White : Color.Red);
 			}
 		}
 
