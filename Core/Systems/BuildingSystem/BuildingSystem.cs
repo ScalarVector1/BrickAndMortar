@@ -57,7 +57,7 @@ namespace BrickAndMortar.Core.Systems.BuildingSystem
 			};
 		}
 
-		public override void PreUpdatePlayers()
+		public override void PostUpdatePlayers()
 		{
 			buildings.ForEach(n => n.PrePassiveUpdate());
 
