@@ -1,4 +1,6 @@
 ﻿using BrickAndMortar.Core.Systems.BuildingSystem;
+using BrickAndMortar.Core.Systems.ResourceSystem;
+using Terraria.ID;
 using Terraria.ModLoader.IO;
 
 namespace BrickAndMortar.Content.Buildings.Resources
@@ -27,6 +29,21 @@ namespace BrickAndMortar.Content.Buildings.Resources
 
 			if (aurumStored < AurumMax && Main.GameUpdateCount % interval == 0)
 				aurumStored++;
+		}
+
+		public override void PassiveBoost(Player player)
+		{
+			if (player.Hitbox.Intersects(new Rectangle(position.X * 16, position.Y * 16, Width * 16, Height * 16)))
+			{
+				int granted = ResourceDropHelper.GrantAurum(Center, player, aurumStored);
+
+				if (granted > 0)
+				{
+					aurumStored -= granted;
+					CombatText.NewText(new Rectangle((int)Center.X, (int)Center.Y, 1, 1), new Color(255, 255, 200), granted);
+					Terraria.Audio.SoundEngine.PlaySound(SoundID.CoinPickup);
+				}
+			}
 		}
 
 		public override void SetStatLines()
