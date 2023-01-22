@@ -62,7 +62,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 
 		public override int GetBuildCount()
 		{
-			return BuildingSystem.GetWorldTier();
+			return BuildingSystem.GetWorldTier() + 1;
 		}
 	}
 }

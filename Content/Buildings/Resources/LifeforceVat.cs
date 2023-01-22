@@ -70,7 +70,7 @@ namespace BrickAndMortar.Content.Buildings.Resources
 
 		public override int GetBuildCount()
 		{
-			return BuildingSystem.GetWorldTier() * 2;
+			return (BuildingSystem.GetWorldTier() + 1) * 2;
 		}
 
 		public override void SaveData(TagCompound tag)

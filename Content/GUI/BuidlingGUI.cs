@@ -11,6 +11,7 @@ namespace BrickAndMortar.Content.GUI
 
 		public UpgradeButton upgradeButton;
 		public CloseButton closeButton;
+		public SpecialButton specialButton;
 
 		private int bgHeight;
 
@@ -36,6 +37,9 @@ namespace BrickAndMortar.Content.GUI
 
 			closeButton = new();
 			Append(closeButton);
+
+			specialButton = new();
+			Append(specialButton);
 		}
 
 		public override void Update(GameTime gameTime)
@@ -46,8 +50,9 @@ namespace BrickAndMortar.Content.GUI
 			if (Vector2.Distance(Main.LocalPlayer.Center, building.Center) > 500)
 				building = null;
 
-			SetButton(closeButton, building.Center + new Vector2(-150, -300 + bgHeight + 16) - Main.screenPosition);
-			SetButton(upgradeButton, building.Center + new Vector2(150 - 32, -300 + bgHeight + 16) - Main.screenPosition);
+			SetButton(closeButton, building.Center + new Vector2(-100, -300 + bgHeight + 16) - Main.screenPosition);
+			SetButton(upgradeButton, building.Center + new Vector2(100 - 32, -300 + bgHeight + 16) - Main.screenPosition);
+			SetButton(specialButton, building.Center + new Vector2(-16, -300 + bgHeight + 16) - Main.screenPosition);
 
 			Recalculate();
 			base.Update(gameTime);
@@ -137,6 +142,26 @@ namespace BrickAndMortar.Content.GUI
 		{
 			if (BuildingGUI.building != null)
 				BuildingGUI.building = null;
+		}
+	}
+
+	internal class SpecialButton : UIElement
+	{
+		public override void Draw(SpriteBatch spriteBatch)
+		{
+			if (BuildingGUI.building != null && BuildingGUI.building.HasTertiaryButton)
+			{
+				Texture2D tex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/Special").Value;
+				Vector2 pos = GetDimensions().Position();
+
+				spriteBatch.Draw(tex, pos, Color.White);
+			}
+		}
+
+		public override void Click(UIMouseEvent evt)
+		{
+			if (BuildingGUI.building != null && BuildingGUI.building.HasTertiaryButton)
+				BuildingGUI.building.OnTertiaryButtonClick();
 		}
 	}
 }

@@ -105,6 +105,12 @@ namespace BrickAndMortar.Content.Buildings
 		/// </summary>
 		public virtual int MaxLevel => 4;
 
+		/// <summary>
+		/// If this building should have a third button option when clicked on
+		/// </summary>
+		/// <returns></returns>
+		public virtual bool HasTertiaryButton => false;
+
 		public void Load(Mod mod)
 		{
 			BuildingSystem.typeDummies[Name] = this;
@@ -164,6 +170,11 @@ namespace BrickAndMortar.Content.Buildings
 		/// </summary>
 		/// <returns></returns>
 		public virtual int GetBuildCount() { return 1; }
+
+		/// <summary>
+		/// What happens when the tertiary button is pressed. See HasTertiaryButton
+		/// </summary>
+		public virtual void OnTertiaryButtonClick() { }
 
 		/// <summary>
 		/// Sets the stat lines of this building
