@@ -362,11 +362,11 @@ namespace BrickAndMortar.Content.Buildings
 	[Autoload(false)]
 	internal class BuildingTile : LoaderFurniture
 	{
-		private string buildingName;
+		private readonly string buildingName;
 
 		public BuildingTile(string name, FurnitureLoadData data, int drop, string texture, string building) : base(name, data, drop, texture)
 		{
-			this.buildingName = building;
+			buildingName = building;
 		}
 
 		public Building BuildingInstance(Point16 pos)
@@ -396,14 +396,6 @@ namespace BrickAndMortar.Content.Buildings
 			j -= frameY / 18;
 
 			BuildingSystem.RemoveBuilding(BuildingInstance(new Point16(i, j)));
-		}
-
-		public override void NearbyEffects(int i, int j, bool closer)
-		{
-			Building instance = BuildingInstance(new Point16(i, j));
-
-			if (instance != null)
-				instance.Update();
 		}
 
 		public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)

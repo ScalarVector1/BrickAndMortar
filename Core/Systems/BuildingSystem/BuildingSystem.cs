@@ -1,7 +1,6 @@
 ﻿using BrickAndMortar.Content.Buildings;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Terraria.DataStructures;
 using Terraria.ModLoader.IO;
 
@@ -57,14 +56,11 @@ namespace BrickAndMortar.Core.Systems.BuildingSystem
 			};
 		}
 
-		public override void PostUpdatePlayers()
+		public override void PreUpdatePlayers()
 		{
-			buildings.ForEach(n => n.PrePassiveUpdate());
+			buildings.ForEach(n => n.levelBoost = 0); //reset
 
-			foreach (Player player in Main.player.Where(n => n.active))
-			{
-				buildings.ForEach(n => n.PassiveBoost(player));
-			}
+			buildings.ForEach(n => n.PrePassiveUpdate());
 
 			buildings.ForEach(n =>
 			{
@@ -74,6 +70,7 @@ namespace BrickAndMortar.Core.Systems.BuildingSystem
 					return;
 				}
 
+				n.Update();
 				n.UpdateBuildTimes();
 			});
 		}
@@ -106,6 +103,14 @@ namespace BrickAndMortar.Core.Systems.BuildingSystem
 
 				AddBuilding(building);
 			}
+		}
+	}
+
+	public class BuildingPlayer : ModPlayer
+	{
+		public override void PreUpdate()
+		{
+			BuildingSystem.buildings.ForEach(n => n.PassiveBoost(Player));
 		}
 	}
 }

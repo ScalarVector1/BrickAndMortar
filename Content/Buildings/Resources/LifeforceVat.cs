@@ -23,7 +23,7 @@ namespace BrickAndMortar.Content.Buildings.Resources
 
 		public override int Height => 3;
 
-		public override void PrePassiveUpdate()
+		public override void Update()
 		{
 			int interval = 216000 / ProductionRate;
 

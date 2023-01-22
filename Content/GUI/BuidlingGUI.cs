@@ -76,7 +76,8 @@ namespace BrickAndMortar.Content.GUI
 
 			DrawBox(spriteBatch, bgTarget);
 
-			Utils.DrawBorderString(spriteBatch, $"{building.FriendlyName} (Level {building.level + 1})", pos + Vector2.One * 10, Color.White, 1.2f);
+			string levelString = $"(Level {building.level + 1}" + (building.levelBoost > 0 ? $"+{building.levelBoost})" : ")");
+			Utils.DrawBorderString(spriteBatch, $"{building.FriendlyName} {levelString}", pos + Vector2.One * 10, Color.White, 1.2f);
 
 			var dividerTarget = new Rectangle((int)pos.X + 10, (int)pos.Y + 40, 280, 2);
 			spriteBatch.Draw(bg, dividerTarget, new Color(20, 40, 70) * 0.8f);
