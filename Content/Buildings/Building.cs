@@ -209,7 +209,7 @@ namespace BrickAndMortar.Content.Buildings
 
 			spriteBatch.Draw(tex, position, source, lightColor);
 
-			DrawBuildTime(spriteBatch, position + new Vector2(Width * 16 / 2 - 42, -32));
+			DrawBuildTime(spriteBatch, position + new Vector2(Width * 16 / 2 - 42, -36));
 		}
 
 		/// <summary>
