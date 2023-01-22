@@ -76,7 +76,7 @@ namespace BrickAndMortar.Content.GUI
 
 			DrawBox(spriteBatch, bgTarget);
 
-			Utils.DrawBorderString(spriteBatch, $"{building.FriendlyName} (Level {building.level + 1})", pos + Vector2.One * 8, Color.White, 1.2f);
+			Utils.DrawBorderString(spriteBatch, $"{building.FriendlyName} (Level {building.level + 1})", pos + Vector2.One * 10, Color.White, 1.2f);
 
 			var dividerTarget = new Rectangle((int)pos.X + 10, (int)pos.Y + 40, 280, 2);
 			spriteBatch.Draw(bg, dividerTarget, new Color(20, 40, 70) * 0.8f);
@@ -201,12 +201,12 @@ namespace BrickAndMortar.Content.GUI
 	{
 		public override void Draw(SpriteBatch spriteBatch)
 		{
-			var inflated = GetDimensions().ToRectangle();
-			inflated.Inflate(4, 4);
-			BuildingGUI.DrawBox(spriteBatch, inflated);
-
 			if (BuildingGUI.building != null && BuildingGUI.building.HasTertiaryButton)
 			{
+				var inflated = GetDimensions().ToRectangle();
+				inflated.Inflate(4, 4);
+				BuildingGUI.DrawBox(spriteBatch, inflated);
+
 				Texture2D tex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/Special").Value;
 				Vector2 pos = GetDimensions().Position();
 
