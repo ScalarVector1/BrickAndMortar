@@ -31,20 +31,30 @@ namespace BrickAndMortar.Content.Buildings
 
 		public void Draw(SpriteBatch spriteBatch, Vector2 position)
 		{
+			var bgTarget = new Rectangle((int)position.X - 4, (int)position.Y - 4, 266, 42);
+			Texture2D bg = Terraria.GameContent.TextureAssets.MagicPixel.Value;
+			Texture2D glow = Terraria.GameContent.TextureAssets.Extra[209].Value;
+
+			Color glowColor = color;
+			glowColor.A = 0;
+
+			spriteBatch.Draw(bg, bgTarget, Color.Black * 0.25f);
+			spriteBatch.Draw(glow, bgTarget, glowColor * 0.75f);
+
 			Texture2D icon = ModContent.Request<Texture2D>(iconTexture).Value;
 
 			if (nextValue != 0)
 			{
 				Utils.DrawBorderString(spriteBatch, $"{description}:", position, color, 0.9f);
 
-				spriteBatch.Draw(icon, position + new Vector2(0, 18), null, Color.White, 0, Vector2.Zero, 0.5f, 0, 0);
+				spriteBatch.Draw(icon, position + new Vector2(0, 20), null, Color.White, 0, Vector2.Zero, 0.5f, 0, 0);
 				Utils.DrawBorderString(spriteBatch, $"{currentValue} => {nextValue}", position + new Vector2(24, 18), color, 0.8f);
 			}
 			else
 			{
 				Utils.DrawBorderString(spriteBatch, $"{description}:", position, color, 0.9f);
 
-				spriteBatch.Draw(icon, position + new Vector2(0, 18), null, Color.White, 0, Vector2.Zero, 0.5f, 0, 0);
+				spriteBatch.Draw(icon, position + new Vector2(0, 20), null, Color.White, 0, Vector2.Zero, 0.5f, 0, 0);
 				Utils.DrawBorderString(spriteBatch, $"{currentValue}", position + new Vector2(24, 18), color, 0.8f);
 			}
 		}
@@ -213,7 +223,7 @@ namespace BrickAndMortar.Content.Buildings
 			foreach (Statline line in statlines)
 			{
 				line.Draw(spriteBatch, position);
-				position.Y += 38;
+				position.Y += 48;
 			}
 
 			return position.Y;

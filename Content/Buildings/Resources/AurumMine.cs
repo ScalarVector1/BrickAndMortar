@@ -48,14 +48,14 @@ namespace BrickAndMortar.Content.Buildings.Resources
 
 		public override void SetStatLines()
 		{
-			statlines.Add(new Statline(AurumMax, 0, "Aurum capacity", "BrickAndMortar/Assets/GUI/AurumIcon", new Color(255, 255, 230)));
-			statlines.Add(new Statline(ProductionRate, 0, "Aurum per hour", "BrickAndMortar/Assets/GUI/AurumIcon", new Color(255, 255, 200)));
+			statlines.Add(new Statline(AurumMax, 0, "Aurum capacity", "BrickAndMortar/Assets/GUI/AurumIcon", new Color(255, 235, 180)));
+			statlines.Add(new Statline(ProductionRate, 0, "Aurum per hour", "BrickAndMortar/Assets/GUI/AurumIcon", new Color(255, 235, 140)));
 		}
 
 		public override void SetNextStatLines()
 		{
-			statlines.Add(new Statline(AurumMax, (EffectiveLevel + 2) * 1000, "Aurum capacity", "BrickAndMortar/Assets/GUI/AurumIcon", new Color(255, 255, 230)));
-			statlines.Add(new Statline(ProductionRate, (EffectiveLevel + 2) * 600, "Aurum per hour", "BrickAndMortar/Assets/GUI/AurumIcon", new Color(255, 255, 200)));
+			statlines.Add(new Statline(AurumMax, (EffectiveLevel + 2) * 1000, "Aurum capacity", "BrickAndMortar/Assets/GUI/AurumIcon", new Color(255, 235, 180)));
+			statlines.Add(new Statline(ProductionRate, (EffectiveLevel + 2) * 600, "Aurum per hour", "BrickAndMortar/Assets/GUI/AurumIcon", new Color(255, 235, 140)));
 		}
 
 		public override int GetLifeforceCost()

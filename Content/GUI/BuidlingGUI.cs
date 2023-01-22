@@ -1,6 +1,7 @@
 ﻿using BrickAndMortar.Content.Buildings;
 using BrickAndMortar.Core.Loaders.UILoading;
 using BrickAndMortar.Core.Systems.BuildingSystem;
+using System;
 using System.Collections.Generic;
 using Terraria.UI;
 
@@ -51,6 +52,9 @@ namespace BrickAndMortar.Content.GUI
 			if (Vector2.Distance(Main.LocalPlayer.Center, building.Center) > 500)
 				building = null;
 
+			if (building is null)
+				return;
+
 			SetButton(closeButton, building.Center + new Vector2(-100, -300 + bgHeight + 16) - Main.screenPosition);
 			SetButton(upgradeButton, building.Center + new Vector2(100 - 32, -300 + bgHeight + 16) - Main.screenPosition);
 			SetButton(specialButton, building.Center + new Vector2(-16, -300 + bgHeight + 16) - Main.screenPosition);
@@ -70,13 +74,25 @@ namespace BrickAndMortar.Content.GUI
 
 			Texture2D bg = Terraria.GameContent.TextureAssets.MagicPixel.Value;
 
-			spriteBatch.Draw(bg, bgTarget, new Color(50, 50, 100) * 0.75f);
+			DrawBox(spriteBatch, bgTarget);
 
 			Utils.DrawBorderString(spriteBatch, $"{building.FriendlyName} (Level {building.level + 1})", pos + Vector2.One * 8, Color.White, 1.2f);
 
+			var dividerTarget = new Rectangle((int)pos.X + 10, (int)pos.Y + 40, 280, 2);
+			spriteBatch.Draw(bg, dividerTarget, new Color(20, 40, 70) * 0.8f);
+
+			dividerTarget.Offset(0, 2);
+			spriteBatch.Draw(bg, dividerTarget, new Color(49, 84, 141) * 0.8f);
+
 			ReLogic.Graphics.DynamicSpriteFont font = Terraria.GameContent.FontAssets.MouseText.Value;
 			string info = Helpers.Helper.WrapString(building.Info, 220, font, 0.8f);
-			Utils.DrawBorderString(spriteBatch, info, pos + new Vector2(8, 48), Color.White, 0.8f);
+			Utils.DrawBorderString(spriteBatch, info, pos + new Vector2(20, 48), Color.White, 0.8f);
+
+			dividerTarget = new Rectangle((int)pos.X + 10, (int)(pos.Y + font.MeasureString(info).Y) + 32, 280, 2);
+			spriteBatch.Draw(bg, dividerTarget, new Color(20, 40, 70) * 0.8f);
+
+			dividerTarget.Offset(0, 2);
+			spriteBatch.Draw(bg, dividerTarget, new Color(49, 84, 141) * 0.8f);
 
 			building.statlines = new();
 
@@ -85,11 +101,38 @@ namespace BrickAndMortar.Content.GUI
 			else
 				building.SetStatLines();
 
-			float y = building.DrawStatLines(spriteBatch, pos + new Vector2(8, 48 + font.MeasureString(info).Y));
+			float y = building.DrawStatLines(spriteBatch, pos + new Vector2(20, 48 + font.MeasureString(info).Y));
 
 			bgHeight = (int)(y + 24 - pos.Y);
 
 			base.Draw(spriteBatch);
+		}
+
+		public static void DrawBox(SpriteBatch sb, Rectangle target, Color color = default)
+		{
+			Texture2D tex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/Box").Value;
+
+			if (color == default)
+				color = new Color(49, 84, 141) * 0.8f;
+
+			var sourceCorner = new Rectangle(0, 0, 6, 6);
+			var sourceEdge = new Rectangle(6, 0, 4, 6);
+			var sourceCenter = new Rectangle(6, 6, 4, 4);
+
+			Rectangle inner = target;
+			inner.Inflate(-4, -4);
+
+			sb.Draw(tex, inner, sourceCenter, color);
+
+			sb.Draw(tex, new Rectangle(target.X + 2, target.Y, target.Width - 4, 6), sourceEdge, color, 0, Vector2.Zero, 0, 0);
+			sb.Draw(tex, new Rectangle(target.X, target.Y - 2 + target.Height, target.Height - 4, 6), sourceEdge, color, -(float)Math.PI * 0.5f, Vector2.Zero, 0, 0);
+			sb.Draw(tex, new Rectangle(target.X - 2 + target.Width, target.Y + target.Height, target.Width - 4, 6), sourceEdge, color, (float)Math.PI, Vector2.Zero, 0, 0);
+			sb.Draw(tex, new Rectangle(target.X + target.Width, target.Y + 2, target.Height - 4, 6), sourceEdge, color, (float)Math.PI * 0.5f, Vector2.Zero, 0, 0);
+
+			sb.Draw(tex, new Rectangle(target.X, target.Y, 6, 6), sourceCorner, color, 0, Vector2.Zero, 0, 0);
+			sb.Draw(tex, new Rectangle(target.X + target.Width, target.Y, 6, 6), sourceCorner, color, (float)Math.PI * 0.5f, Vector2.Zero, 0, 0);
+			sb.Draw(tex, new Rectangle(target.X + target.Width, target.Y + target.Height, 6, 6), sourceCorner, color, (float)Math.PI, Vector2.Zero, 0, 0);
+			sb.Draw(tex, new Rectangle(target.X, target.Y + target.Height, 6, 6), sourceCorner, color, (float)Math.PI * 1.5f, Vector2.Zero, 0, 0);
 		}
 	}
 
@@ -99,6 +142,10 @@ namespace BrickAndMortar.Content.GUI
 		{
 			if (BuildingGUI.building != null)
 			{
+				var inflated = GetDimensions().ToRectangle();
+				inflated.Inflate(4, 4);
+				BuildingGUI.DrawBox(spriteBatch, inflated);
+
 				Texture2D tex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/Upgrade").Value;
 				Vector2 pos = GetDimensions().Position();
 
@@ -132,6 +179,10 @@ namespace BrickAndMortar.Content.GUI
 		{
 			if (BuildingGUI.building != null)
 			{
+				var inflated = GetDimensions().ToRectangle();
+				inflated.Inflate(4, 4);
+				BuildingGUI.DrawBox(spriteBatch, inflated);
+
 				Texture2D tex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/Close").Value;
 				Vector2 pos = GetDimensions().Position();
 
@@ -150,6 +201,10 @@ namespace BrickAndMortar.Content.GUI
 	{
 		public override void Draw(SpriteBatch spriteBatch)
 		{
+			var inflated = GetDimensions().ToRectangle();
+			inflated.Inflate(4, 4);
+			BuildingGUI.DrawBox(spriteBatch, inflated);
+
 			if (BuildingGUI.building != null && BuildingGUI.building.HasTertiaryButton)
 			{
 				Texture2D tex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/Special").Value;
