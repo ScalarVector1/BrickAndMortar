@@ -63,6 +63,14 @@ namespace BrickAndMortar.Content.GUI
 		{
 			base.Draw(spriteBatch);
 
+			Texture2D backTex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/Defense").Value;
+
+			spriteBatch.Draw(backTex, new Vector2(400, 310), Color.White);
+			Utils.DrawBorderString(spriteBatch, $"{BuildingSystem.GetWorldTier() + 1}", new Vector2(416, 332), Color.Lerp(new Color(100, 255, 100), new Color(255, 100, 100), BuildingSystem.GetWorldTier() / 4f), 1.1f, 0.5f, 0.5f);
+
+			if (new Rectangle(400, 310, 32, 32).Contains(Main.MouseScreen.ToPoint()))
+				Utils.DrawBorderString(spriteBatch, $"World tier: {BuildingSystem.GetWorldTier() + 1}\n{BuildingSystem.GetErrorMessage(BuildingSystem.GetWorldTier() + 1)}", Main.MouseScreen + Vector2.One * 16, Color.White);
+
 			if (expandButton.IsMouseHovering)
 				Utils.DrawBorderString(spriteBatch, "Build menu", Main.MouseScreen + Vector2.One * 16, Color.White);
 		}

@@ -48,10 +48,10 @@ namespace BrickAndMortar.Core.Systems.BuildingSystem
 		{
 			return neededTier switch
 			{
-				1 => $"Defeat the Eater of Worlds or Brain of Cthulu to unlock this!",
-				2 => "Defeat the Wall of Flesh to unlock this!",
-				3 => "Defeat any mechanical boss to unlock this!",
-				4 => "Defeat the golem to unlock this!",
+				1 => $"Defeat the Eater of Worlds or Brain of Cthulu to upgrade!",
+				2 => "Defeat the Wall of Flesh to upgrade!",
+				3 => "Defeat any mechanical boss to uupgrade!",
+				4 => "Defeat the golem to upgrade!",
 				5 => "Maximum reached!",
 				_ => "An unknown error has occured.",
 			};

@@ -466,6 +466,17 @@ namespace BrickAndMortar.Content.Buildings
 			return clone;
 		}
 
+		public override void Update(ref float gravity, ref float maxFallSpeed)
+		{
+			Item.TurnToAir();
+		}
+
+		public override void UpdateInventory(Player player)
+		{
+			if (Item != Main.mouseItem)
+				Item.TurnToAir();
+		}
+
 		public override void ModifyTooltips(List<TooltipLine> tooltips)
 		{
 			if (Building is null)
