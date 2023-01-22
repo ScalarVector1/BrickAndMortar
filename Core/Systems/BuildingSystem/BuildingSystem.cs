@@ -108,7 +108,7 @@ namespace BrickAndMortar.Core.Systems.BuildingSystem
 
 	public class BuildingPlayer : ModPlayer
 	{
-		public override void PreUpdate()
+		public override void UpdateEquips()
 		{
 			BuildingSystem.buildings.ForEach(n => n.PassiveBoost(Player));
 		}
