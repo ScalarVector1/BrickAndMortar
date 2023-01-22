@@ -1,5 +1,6 @@
 ﻿using BrickAndMortar.Content.Buildings;
 using BrickAndMortar.Core.Loaders.UILoading;
+using BrickAndMortar.Core.Systems.BuildingSystem;
 using System.Collections.Generic;
 using Terraria.UI;
 
@@ -106,7 +107,7 @@ namespace BrickAndMortar.Content.GUI
 				if (IsMouseHovering)
 				{
 					if (BuildingGUI.building.level >= BuildingGUI.building.MaxLevel)
-						Utils.DrawBorderString(spriteBatch, "Max level!", Main.MouseScreen + Vector2.One * 16, Color.White);
+						Utils.DrawBorderString(spriteBatch, BuildingSystem.GetWorldTier() == 4 ? "Max level!" : "Advance your world tier to unlock", Main.MouseScreen + Vector2.One * 16, Color.White);
 					else if (BuildingGUI.building.underConstruction)
 						Utils.DrawBorderString(spriteBatch, "Already upgrading...", Main.MouseScreen + Vector2.One * 16, Color.White);
 					else

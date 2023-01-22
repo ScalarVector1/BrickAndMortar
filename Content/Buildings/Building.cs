@@ -101,9 +101,9 @@ namespace BrickAndMortar.Content.Buildings
 		public abstract int Height { get; }
 
 		/// <summary>
-		/// Gets the max level of this building. By default is always 4.
+		/// Gets the max level of this building. By default the world tier.
 		/// </summary>
-		public virtual int MaxLevel => 4;
+		public virtual int MaxLevel => BuildingSystem.GetWorldTier();
 
 		/// <summary>
 		/// If this building should have a third button option when clicked on
