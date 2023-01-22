@@ -6,7 +6,7 @@ namespace BrickAndMortar.Content.Buildings.Support
 	{
 		public float LightPower => 1 + EffectiveLevel * 0.25f;
 
-		public float CritBoost => (EffectiveLevel + 1) * 0.01f;
+		public float CritBoost => EffectiveLevel + 1;
 
 		public override string Name => "Illuminator";
 
@@ -19,13 +19,13 @@ namespace BrickAndMortar.Content.Buildings.Support
 		public override void SetStatLines()
 		{
 			statlines.Add(new Statline(LightPower, 0, "Light strength", "BrickAndMortar/Assets/GUI/TowerDamage", new Color(255, 255, 200)));
-			statlines.Add(new Statline(CritBoost * 100, 0, "Critical strike chance boost", "BrickAndMortar/Assets/GUI/Damage", new Color(255, 200, 150)));
+			statlines.Add(new Statline(CritBoost, 0, "Critical strike chance boost", "BrickAndMortar/Assets/GUI/Damage", new Color(255, 200, 150)));
 		}
 
 		public override void SetNextStatLines()
 		{
 			statlines.Add(new Statline(LightPower, 1 + (EffectiveLevel + 1) * 0.25f, "Light strength", "BrickAndMortar/Assets/GUI/TowerDamage", new Color(255, 255, 200)));
-			statlines.Add(new Statline(CritBoost * 100, EffectiveLevel + 2, "Critical strike chance boost", "BrickAndMortar/Assets/GUI/Damage", new Color(255, 200, 150)));
+			statlines.Add(new Statline(CritBoost, EffectiveLevel + 2, "Critical strike chance boost", "BrickAndMortar/Assets/GUI/Damage", new Color(255, 200, 150)));
 		}
 
 		public override void PassiveBoost(Player player)

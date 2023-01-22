@@ -54,7 +54,7 @@ namespace BrickAndMortar.Content.Buildings.Support
 					break;
 
 				case buffMode.Crit:
-					player.GetCritChance(DamageClass.Generic) += 0.03f * (EffectiveLevel + 1);
+					player.GetCritChance(DamageClass.Generic) += 3 * (EffectiveLevel + 1);
 					break;
 
 				case buffMode.Defense:
