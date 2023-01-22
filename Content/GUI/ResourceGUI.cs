@@ -18,7 +18,7 @@ namespace BrickAndMortar.Content.GUI
 
 		public override int InsertionIndex(List<GameInterfaceLayer> layers)
 		{
-			return 1;
+			return layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
 		}
 
 		public override void OnInitialize()

@@ -9,22 +9,22 @@ namespace BrickAndMortar.Core.Systems.BuildingSystem
 {
 	internal class BuildingSystem : ModSystem
 	{
-		public static Dictionary<string, Building> typeDummies = new();
+		public static List<Building> typeDummies = new();
+		public static Dictionary<string, Building> typeDummyByName = new();
 
 		public static List<Building> buildings = new();
-
-		public static Dictionary<Point16, Building> byPosition = new();
+		public static Dictionary<Point16, Building> buildingByPosition = new();
 
 		public static void AddBuilding(Building toAdd)
 		{
 			buildings.Add(toAdd);
-			byPosition.Add(toAdd.position, toAdd);
+			buildingByPosition.Add(toAdd.position, toAdd);
 		}
 
 		public static void RemoveBuilding(Building toRemove)
 		{
 			buildings.Remove(toRemove);
-			byPosition.Remove(toRemove.position);
+			buildingByPosition.Remove(toRemove.position);
 		}
 
 		public static int GetWorldTier()
@@ -95,7 +95,7 @@ namespace BrickAndMortar.Core.Systems.BuildingSystem
 		public override void LoadWorldData(TagCompound tag)
 		{
 			buildings = new();
-			byPosition = new();
+			buildingByPosition = new();
 
 			IList<TagCompound> buildingData = tag.GetList<TagCompound>("buildings");
 

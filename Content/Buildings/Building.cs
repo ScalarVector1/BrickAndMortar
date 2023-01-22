@@ -123,7 +123,8 @@ namespace BrickAndMortar.Content.Buildings
 
 		public void Load(Mod mod)
 		{
-			BuildingSystem.typeDummies[Name] = this;
+			BuildingSystem.typeDummyByName[Name] = this;
+			BuildingSystem.typeDummies.Add(this);
 
 			mod.AddContent(new BuildingTile(Name + "_tile", new FurnitureLoadData(Width, Height, 0, SoundID.Tink, false, Color.White), 0, $"BrickAndMortar/Assets/Buildings/{Name}", Name));
 			mod.AddContent(new BuildingItem(Name + "_tile", Name));
@@ -370,8 +371,8 @@ namespace BrickAndMortar.Content.Buildings
 
 		public Building BuildingInstance(Point16 pos)
 		{
-			if (BuildingSystem.byPosition.ContainsKey(pos))
-				return BuildingSystem.byPosition[pos];
+			if (BuildingSystem.buildingByPosition.ContainsKey(pos))
+				return BuildingSystem.buildingByPosition[pos];
 
 			return null;
 		}
@@ -383,7 +384,7 @@ namespace BrickAndMortar.Content.Buildings
 			i -= tile.TileFrameX / 18;
 			j -= tile.TileFrameY / 18;
 
-			var building = (Building)Activator.CreateInstance(BuildingSystem.typeDummies[buildingName].GetType());
+			var building = (Building)Activator.CreateInstance(BuildingSystem.typeDummyByName[buildingName].GetType());
 			building.position = new Point16(i, j);
 
 			BuildingSystem.AddBuilding(building);
@@ -427,7 +428,7 @@ namespace BrickAndMortar.Content.Buildings
 			i -= tile.TileFrameX / 18;
 			j -= tile.TileFrameY / 18;
 
-			BuildingGUI.building = BuildingSystem.byPosition[new Point16(i, j)];
+			BuildingGUI.building = BuildingSystem.buildingByPosition[new Point16(i, j)];
 
 			return true;
 		}
@@ -438,18 +439,23 @@ namespace BrickAndMortar.Content.Buildings
 	{
 		private string buildingName;
 
-		private Building Building => BuildingSystem.typeDummies[buildingName];
+		private Building Building => BuildingSystem.typeDummyByName[buildingName];
 
 		protected override bool CloneNewInstances => true;
 
 		public BuildingItem() : base() { }
 
 		public BuildingItem(string placetype, string building) : base(
-			$"{BuildingSystem.typeDummies[building].Name}_item",
-			$"{BuildingSystem.typeDummies[building].FriendlyName}",
-			"", placetype, 0, BuildingSystem.typeDummies[building].TexturePath + "_item", true)
+			$"{BuildingSystem.typeDummyByName[building].Name}_item",
+			$"{BuildingSystem.typeDummyByName[building].FriendlyName}",
+			"", placetype, 0, BuildingSystem.typeDummyByName[building].TexturePath + "_item", true)
 		{
 			buildingName = building;
+		}
+
+		public override void SafeSetDefaults()
+		{
+			Item.rare = ItemRarityID.Blue;
 		}
 
 		public override ModItem Clone(Item newEntity)
@@ -466,7 +472,12 @@ namespace BrickAndMortar.Content.Buildings
 				return;
 
 			tooltips.Add(new TooltipLine(Mod, "Info", $"{Helpers.Helper.WrapString(Building.Info, 400, Terraria.GameContent.FontAssets.MouseText.Value, 1f)}"));
-			tooltips.Add(new TooltipLine(Mod, "MaxCount", $"Placed: {BuildingSystem.buildings.Count(n => n.GetType() == Building.GetType())}/{Building.GetBuildCount()}"));
+
+			var countLine = new TooltipLine(Mod, "MaxCount", $"Placed: {BuildingSystem.buildings.Count(n => n.GetType() == Building.GetType())}/{Building.GetBuildCount()}")
+			{
+				OverrideColor = CanUseItem(Main.LocalPlayer) ? Color.Yellow : Color.LightGray
+			};
+			tooltips.Add(countLine);
 		}
 
 		public override bool CanUseItem(Player player)
