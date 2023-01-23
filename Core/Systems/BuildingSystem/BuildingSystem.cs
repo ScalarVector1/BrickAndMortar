@@ -111,6 +111,9 @@ namespace BrickAndMortar.Core.Systems.BuildingSystem
 		public override void UpdateEquips()
 		{
 			BuildingSystem.buildings.ForEach(n => n.PassiveBoost(Player));
+
+			if (Player.trashItem.ModItem is BuildingItem) //Have to manually handle the trash slot here because its funny
+				Player.trashItem.TurnToAir();
 		}
 	}
 }

@@ -4,11 +4,13 @@ using BrickAndMortar.Core.Systems.BuildingSystem;
 using BrickAndMortar.Core.Systems.ResourceSystem;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
+using Terraria.UI.Chat;
 
 namespace BrickAndMortar.Content.Buildings
 {
@@ -540,10 +542,35 @@ namespace BrickAndMortar.Content.Buildings
 			ResourceSpending.DrawCost(spriteBatch, Main.MouseScreen + Vector2.One * 16, $"place {Building.FriendlyName}", Building.GetAurumCost(), Building.GetLifeforceCost());
 		}
 
+		public override bool PreDrawTooltip(ReadOnlyCollection<TooltipLine> lines, ref int x, ref int y)
+		{
+
+			float width;
+			float height = -16;
+			Vector2 pos;
+
+			ReLogic.Graphics.DynamicSpriteFont font = Terraria.GameContent.FontAssets.MouseText.Value;
+
+			string widest = lines.OrderBy(n => ChatManager.GetStringSize(font, n.Text, Vector2.One).X).Last().Text;
+			width = ChatManager.GetStringSize(font, widest, Vector2.One).X;
+
+			pos = new Vector2(x, y) + new Vector2(width + 30, 0);
+
+			width = ChatManager.GetStringSize(font, $"Cost to place {Building.FriendlyName}", Vector2.One).X;
+			height = 52;
+
+			if (Building.GetAurumCost() > 0 && Building.GetLifeforceCost() > 0)
+				height = 80;
+
+			Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)pos.X - 10, (int)pos.Y - 10, (int)width + 24, (int)height + 20), new Color(25, 20, 55) * 0.925f);
+			ResourceSpending.DrawCost(Main.spriteBatch, pos, $"place {Building.FriendlyName}", Building.GetAurumCost(), Building.GetLifeforceCost());
+
+			return true;
+		}
+
 		public override bool CanUseItem(Player player)
 		{
 			return BuildingSystem.buildings.Count(n => n.GetType() == Building.GetType()) < Building.GetBuildCount();
-
 		}
 	}
 }
