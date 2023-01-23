@@ -55,9 +55,9 @@ namespace BrickAndMortar.Content.GUI
 			if (building is null)
 				return;
 
-			SetButton(closeButton, building.Center + new Vector2(-100, -300 + bgHeight + 16) - Main.screenPosition);
-			SetButton(upgradeButton, building.Center + new Vector2(100 - 32, -300 + bgHeight + 16) - Main.screenPosition);
-			SetButton(specialButton, building.Center + new Vector2(-16, -300 + bgHeight + 16) - Main.screenPosition);
+			SetButton(closeButton, building.Center + new Vector2(160, -building.Height * 8 - bgHeight - 68) - Main.screenPosition);
+			SetButton(upgradeButton, building.Center + new Vector2(160, -building.Height * 8 - 68) - Main.screenPosition);
+			SetButton(specialButton, building.Center + new Vector2(160, -building.Height * 8 - 68 - 42) - Main.screenPosition);
 
 			Recalculate();
 			base.Update(gameTime);
@@ -68,7 +68,7 @@ namespace BrickAndMortar.Content.GUI
 			if (building is null)
 				return;
 
-			Vector2 pos = building.Center + new Vector2(-150, -300) - Main.screenPosition;
+			Vector2 pos = building.Center + new Vector2(-150, -(bgHeight + building.Height * 8 + 32)) - Main.screenPosition;
 
 			var bgTarget = new Rectangle((int)pos.X, (int)pos.Y, 300, bgHeight);
 
@@ -114,7 +114,7 @@ namespace BrickAndMortar.Content.GUI
 			Texture2D tex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/GUI/Box").Value;
 
 			if (color == default)
-				color = new Color(49, 84, 141) * 0.8f;
+				color = new Color(49, 84, 141) * 0.9f;
 
 			var sourceCorner = new Rectangle(0, 0, 6, 6);
 			var sourceEdge = new Rectangle(6, 0, 4, 6);
