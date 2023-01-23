@@ -34,7 +34,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 
 		public override void PassiveBoost(Player player)
 		{
-			player.endurance += EnduranceBoost;
+			player.endurance += EnduranceBoost * 0.01f;
 		}
 
 		public override void Update()

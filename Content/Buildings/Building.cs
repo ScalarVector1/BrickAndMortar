@@ -357,6 +357,38 @@ namespace BrickAndMortar.Content.Buildings
 
 			return false;
 		}
+
+		/// <summary>
+		/// Attempts to place a building based on it's costs
+		/// </summary>
+		/// <param name="player">The player trying to build</param>
+		/// <returns>If the building can be placed or not</returns>
+		public bool TryPlace(Player player)
+		{
+			ResourcePlayer mp = player.GetModPlayer<ResourcePlayer>();
+
+			if (GetAurumCost() > 0 && GetLifeforceCost() > 0)
+			{
+				if (ResourceSpending.TrySpendBoth(player, GetAurumCost(), GetLifeforceCost()))
+					return true;
+			}
+			else if (GetAurumCost() > 0)
+			{
+				if (ResourceSpending.TrySpendAurum(player, GetAurumCost()))
+					return true;
+			}
+			else if (GetLifeforceCost() > 0)
+			{
+				if (ResourceSpending.TrySpendLifeforce(player, GetLifeforceCost()))
+					return true;
+			}
+			else //building is marked as free
+			{
+				return true;
+			}
+
+			return false;
+		}
 	}
 
 	[Autoload(false)]
@@ -375,6 +407,20 @@ namespace BrickAndMortar.Content.Buildings
 				return BuildingSystem.buildingByPosition[pos];
 
 			return null;
+		}
+
+		public override bool CanPlace(int i, int j)
+		{
+			if (BuildingSystem.typeDummyByName[buildingName].TryPlace(Main.LocalPlayer))
+			{
+				return true;
+			}
+			else
+			{
+				Main.LocalPlayer.itemAnimation = 0;
+				Main.mouseItem.TurnToAir();
+				return false;
+			}
 		}
 
 		public override void PlaceInWorld(int i, int j, Item item)
@@ -448,6 +494,7 @@ namespace BrickAndMortar.Content.Buildings
 		public override void SafeSetDefaults()
 		{
 			Item.rare = ItemRarityID.Blue;
+			Item.consumable = true;
 		}
 
 		public override ModItem Clone(Item newEntity)
@@ -465,8 +512,13 @@ namespace BrickAndMortar.Content.Buildings
 
 		public override void UpdateInventory(Player player)
 		{
-			if (Item != Main.mouseItem)
+			if (Item != Main.mouseItem || !CanUseItem(player))
 				Item.TurnToAir();
+		}
+
+		public override bool ConsumeItem(Player player)
+		{
+			return BuildingSystem.buildings.Count(n => n.GetType() == Building.GetType()) >= Building.GetBuildCount();
 		}
 
 		public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -483,9 +535,15 @@ namespace BrickAndMortar.Content.Buildings
 			tooltips.Add(countLine);
 		}
 
+		public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+		{
+			ResourceSpending.DrawCost(spriteBatch, Main.MouseScreen + Vector2.One * 16, $"place {Building.FriendlyName}", Building.GetAurumCost(), Building.GetLifeforceCost());
+		}
+
 		public override bool CanUseItem(Player player)
 		{
 			return BuildingSystem.buildings.Count(n => n.GetType() == Building.GetType()) < Building.GetBuildCount();
+
 		}
 	}
 }
