@@ -28,6 +28,8 @@ namespace BrickAndMortar.Content.Buildings.Support
 
 		public override bool HasTertiaryButton => true;
 
+		public override string TertiaryButtonText => "Change boost type";
+
 		public override void OnTertiaryButtonClick()
 		{
 			mode = (buffMode)((int)(mode + 1) % 7);

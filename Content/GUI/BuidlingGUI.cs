@@ -55,7 +55,7 @@ namespace BrickAndMortar.Content.GUI
 			if (building is null)
 				return;
 
-			SetButton(closeButton, building.Center + new Vector2(160, -building.Height * 8 - bgHeight - 68) - Main.screenPosition);
+			SetButton(closeButton, building.Center + new Vector2(160, -building.Height * 8 - bgHeight - 28) - Main.screenPosition);
 			SetButton(upgradeButton, building.Center + new Vector2(160, -building.Height * 8 - 68) - Main.screenPosition);
 			SetButton(specialButton, building.Center + new Vector2(160, -building.Height * 8 - 68 - 42) - Main.screenPosition);
 
@@ -212,6 +212,9 @@ namespace BrickAndMortar.Content.GUI
 				Vector2 pos = GetDimensions().Position();
 
 				spriteBatch.Draw(tex, pos, Color.White);
+
+				if (IsMouseHovering)
+					Utils.DrawBorderString(spriteBatch, BuildingGUI.building.TertiaryButtonText, Main.MouseScreen + Vector2.One * 16, Color.White);
 			}
 		}
 
