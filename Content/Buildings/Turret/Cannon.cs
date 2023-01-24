@@ -45,8 +45,8 @@ namespace BrickAndMortar.Content.Buildings.Turret
 			{
 				timer++;
 
-				if (timer % 3600 == 0)
-					Projectile.NewProjectile(null, Center, Vector2.Normalize(possibleTargets.First().Center - Center), ProjectileID.WoodenArrowFriendly, ProjectileDamage, 1, Main.myPlayer);
+				if (timer % 120 == 0)
+					Projectile.NewProjectile(null, Center, Vector2.Normalize(possibleTargets.First().Center - Center) * 7, ModContent.ProjectileType<Cannonball>(), ProjectileDamage, 1, Main.myPlayer);
 			}
 		}
 
@@ -63,6 +63,70 @@ namespace BrickAndMortar.Content.Buildings.Turret
 		public override int GetBuildCount()
 		{
 			return BuildingSystem.GetWorldTier() + 1;
+		}
+	}
+
+	internal class Cannonball : ModProjectile
+	{
+		public override string Texture => "BrickAndMortar/Assets/Misc/DotTell";
+
+		public override void SetStaticDefaults()
+		{
+			DisplayName.SetDefault("Cannonball");
+			ProjectileID.Sets.TrailCacheLength[Projectile.type] = 45;
+			ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+		}
+
+		public override void SetDefaults()
+		{
+			Projectile.width = 32;
+			Projectile.height = 32;
+			Projectile.friendly = true;
+			Projectile.extraUpdates = 2;
+		}
+
+		public override void Kill(int timeLeft)
+		{
+			Terraria.Audio.SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
+
+			for (int k = 0; k < 15; k++)
+			{
+				Dust.NewDustPerfect(Projectile.Center, DustID.GoldFlame, (-Projectile.velocity * 2 * Main.rand.NextFloat(0f, 0.4f)).RotatedByRandom(1.2f), 0, default, 1.5f);
+				Dust.NewDustPerfect(Projectile.Center, DustID.Iron, (-Projectile.velocity * 2 * Main.rand.NextFloat(0f, 0.1f)).RotatedByRandom(0.45f), 0, default, 1.5f);
+			}
+		}
+
+		public override bool PreDraw(ref Color lightColor)
+		{
+			Texture2D tex = ModContent.Request<Texture2D>("BrickAndMortar/Assets/Misc/DotTell").Value;
+
+			for (int k = 0; k < Projectile.oldPos.Length; k++)
+			{
+				Color color = Color.Lerp(Color.Orange, new Color(255, 255, 100), (Projectile.oldPos.Length - k) / (float)Projectile.oldPos.Length) * ((Projectile.oldPos.Length - k) / (float)Projectile.oldPos.Length);
+
+				if (k <= 4)
+					color *= 1.2f;
+
+				color.A = 0;
+
+				color *= Projectile.damage / 300f;
+
+				float scale = Projectile.scale * (Projectile.oldPos.Length - k) / Projectile.oldPos.Length * 0.6f;
+
+				Main.spriteBatch.Draw(tex, (Projectile.oldPos[k] + Projectile.Size / 2 + Projectile.Center) * 0.5f - Main.screenPosition, null, color, 0, tex.Size() / 2, scale, default, default);
+			}
+
+			Color glowColor = new Color(255, 255, 100) * (Projectile.damage / 300f) * 0.5f;
+			glowColor.A = 0;
+
+			Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, glowColor, 0, tex.Size() / 2, 1, 0, 0);
+
+			Texture2D tex2 = Terraria.GameContent.TextureAssets.Item[929].Value;
+			Main.spriteBatch.Draw(tex2, Projectile.Center - Main.screenPosition, null, Color.White, 0, tex2.Size() / 2, 1, 0, 0);
+
+			Lighting.AddLight(Projectile.Center, new Vector3(0.1f, 0.1f, 0.05f));
+
+			return false;
 		}
 	}
 }
