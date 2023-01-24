@@ -90,7 +90,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 
 		public Vector2 moveTarget;
 
-		public override string Texture => "BrickAndMortar/AssetDirectory/Buildings/Guard";
+		public override string Texture => "BrickAndMortar/Assets/Buildings/Guard";
 
 		public override void SetDefaults()
 		{
