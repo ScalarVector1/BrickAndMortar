@@ -45,7 +45,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 
 		public override void Update()
 		{
-			minions.RemoveAll(n => !n.active || n is null);
+			minions.RemoveAll(n => n is null || n.type != ModContent.ProjectileType<Guard>() || !n.active);
 
 			IEnumerable<NPC> possibleTargets = Main.npc.Where(n => n.active && Vector2.Distance(n.Center, Center) < 1000);
 
@@ -53,7 +53,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 			{
 				while (minions.Count < MinionCount)
 				{
-					int i = Projectile.NewProjectile(null, Center, Vector2.Zero, ModContent.ProjectileType<Guard>(), MinionDamage, 0, Main.myPlayer);
+					int i = Projectile.NewProjectile(null, Center, Vector2.Zero, ModContent.ProjectileType<Guard>(), MinionDamage, 1, Main.myPlayer);
 
 					var mp = Main.projectile[i].ModProjectile as Guard;
 					mp.parent = this;
@@ -98,6 +98,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 			Projectile.timeLeft = 2;
 			Projectile.width = 32;
 			Projectile.height = 48;
+			Projectile.penetrate = -1;
 		}
 
 		public override bool OnTileCollide(Vector2 oldVelocity)
@@ -109,7 +110,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 		{
 			Projectile.timeLeft = 2;
 
-			if (Projectile.velocity.Y < 5)
+			if (Projectile.velocity.Y < 15)
 				Projectile.velocity.Y += 0.4f;
 
 			if (target is null || !target.active || Vector2.Distance(target.Center, parent.Center) > 1000)
@@ -118,8 +119,8 @@ namespace BrickAndMortar.Content.Buildings.Turret
 
 				if (possibleTargets.Count() <= 0)
 					target = null;
-
-				target = possibleTargets.ElementAt(Main.rand.Next(possibleTargets.Count()));
+				else
+					target = possibleTargets.ElementAt(Main.rand.Next(possibleTargets.Count()));
 			}
 
 			if (target is null)
@@ -127,11 +128,16 @@ namespace BrickAndMortar.Content.Buildings.Turret
 			else
 				moveTarget = target.Center;
 
-			Projectile.velocity.X += Vector2.Normalize(Projectile.Center - moveTarget).X * 0.1f;
-			Projectile.velocity.X *= 0.95f;
+			Projectile.velocity.X += Vector2.Normalize(Projectile.Center - moveTarget).X * -0.1f;
+			Projectile.velocity.X *= 0.98f;
 
-			if (moveTarget.Y < Projectile.Center.Y && Projectile.velocity.Y == 0)
-				Projectile.velocity.Y -= 5;
+			if (moveTarget.Y < Projectile.Center.Y && System.Math.Abs(Projectile.velocity.Y) <= 0.4f && System.Math.Abs(Projectile.Center.X - moveTarget.X) < 64)
+				Projectile.velocity.Y -= 10;
+		}
+
+		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+		{
+			Projectile.velocity += Vector2.Normalize(Projectile.Center - target.Center) * 5;
 		}
 	}
 }
