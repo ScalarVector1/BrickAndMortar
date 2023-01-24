@@ -38,7 +38,7 @@ namespace BrickAndMortar.Content.Buildings.Support
 			{
 				player.lifeRegen += RegenAura;
 
-				if (Main.rand.NextBool(5))
+				if (Main.rand.NextBool(15))
 					Dust.NewDustPerfect(player.Center + Main.rand.NextVector2Circular(16, 32), DustID.HealingPlus, Vector2.UnitY * -1);
 			}
 		}
