@@ -12,7 +12,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 
 		public int MinionDamage => (EffectiveLevel + 1) * 20;
 
-		public int DefenseBoost => EffectiveLevel + 1;
+		public int DefenseBoost => (EffectiveLevel + 1) * 2;
 
 		public override string Name => "GuardPost";
 
@@ -35,7 +35,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 		{
 			statlines.Add(new Statline(MinionCount, (EffectiveLevel + 2) / 3 + 1, "Guard quantity", "BrickAndMortar/Assets/GUI/TowerDamage", new Color(255, 100, 200)));
 			statlines.Add(new Statline(MinionDamage, (EffectiveLevel + 2) * 20, "Guard power", "BrickAndMortar/Assets/GUI/TowerDamage", new Color(230, 230, 230)));
-			statlines.Add(new Statline(DefenseBoost, EffectiveLevel + 2, "Defense boost", "BrickAndMortar/Assets/GUI/Defense", new Color(200, 200, 200)));
+			statlines.Add(new Statline(DefenseBoost, (EffectiveLevel + 2) * 2, "Defense boost", "BrickAndMortar/Assets/GUI/Defense", new Color(200, 200, 200)));
 		}
 
 		public override void PassiveBoost(Player player)
