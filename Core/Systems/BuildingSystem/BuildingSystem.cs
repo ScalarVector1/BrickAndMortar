@@ -56,7 +56,7 @@ namespace BrickAndMortar.Core.Systems.BuildingSystem
 			};
 		}
 
-		public override void PreUpdatePlayers()
+		public override void PostUpdateNPCs()
 		{
 			buildings.ForEach(n => n.levelBoost = 0); //reset
 

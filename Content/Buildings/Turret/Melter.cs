@@ -11,7 +11,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 
 		public float opacity;
 
-		public int Burn => (EffectiveLevel + 1) * 5;
+		public int Burn => (EffectiveLevel + 1) * 15;
 
 		public int DamageBoost => (EffectiveLevel + 1) * 4;
 
@@ -31,7 +31,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 
 		public override void SetNextStatLines()
 		{
-			statlines.Add(new Statline(Burn, (EffectiveLevel + 2) * 5, "Burning damage per second", "BrickAndMortar/Assets/GUI/TowerDamage", new Color(255, 210, 140)));
+			statlines.Add(new Statline(Burn, (EffectiveLevel + 2) * 15, "Burning damage per second", "BrickAndMortar/Assets/GUI/TowerDamage", new Color(255, 210, 140)));
 			statlines.Add(new Statline(DamageBoost, (EffectiveLevel + 2) * 4, "Flat damage boost", "BrickAndMortar/Assets/GUI/Damage", new Color(255, 200, 180)));
 		}
 
@@ -42,7 +42,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 
 		public override void Update()
 		{
-			System.Collections.Generic.IEnumerable<NPC> possibleTargets = Main.npc.Where(n => n.active && Vector2.Distance(n.Center, Center) < 400);
+			System.Collections.Generic.IEnumerable<NPC> possibleTargets = Main.npc.Where(n => n.active && Vector2.Distance(n.Center, Center) < 200);
 
 			foreach (NPC npc in possibleTargets)
 			{
@@ -109,11 +109,9 @@ namespace BrickAndMortar.Content.Buildings.Turret
 
 		public override void UpdateLifeRegen(NPC npc, ref int damage)
 		{
-			npc.lifeRegen -= burn * 2;
-		}
+			if (burn > 0)
+				npc.lifeRegen -= burn * 2;
 
-		public override void ResetEffects(NPC npc)
-		{
 			burn = 0;
 		}
 	}
