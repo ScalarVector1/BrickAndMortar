@@ -8,7 +8,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 	{
 		private int timer;
 
-		public int ProjectileDamage => (EffectiveLevel + 1) * 35;
+		public int ProjectileDamage => (EffectiveLevel + 1) * 25;
 
 		public float DamageBoost => (EffectiveLevel + 1) * 0.02f;
 
@@ -28,7 +28,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 
 		public override void SetNextStatLines()
 		{
-			statlines.Add(new Statline(ProjectileDamage, (EffectiveLevel + 2) * 35, "Cannon damage", "BrickAndMortar/Assets/GUI/TowerDamage", new Color(255, 210, 210)));
+			statlines.Add(new Statline(ProjectileDamage, (EffectiveLevel + 2) * 25, "Cannon damage", "BrickAndMortar/Assets/GUI/TowerDamage", new Color(255, 210, 210)));
 			statlines.Add(new Statline(DamageBoost * 100, (EffectiveLevel + 2) * 2, "Damage boost %", "BrickAndMortar/Assets/GUI/Damage", new Color(255, 180, 180)));
 		}
 
