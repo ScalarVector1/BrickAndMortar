@@ -105,6 +105,8 @@ namespace BrickAndMortar.Content.Buildings.Turret
 	{
 		public int burn;
 
+		public override bool InstancePerEntity => true;
+
 		public override void UpdateLifeRegen(NPC npc, ref int damage)
 		{
 			npc.lifeRegen -= burn * 2;

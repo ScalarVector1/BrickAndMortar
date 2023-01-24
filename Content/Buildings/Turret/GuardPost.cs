@@ -6,7 +6,7 @@ namespace BrickAndMortar.Content.Buildings.Turret
 {
 	internal class GuardPost : Building
 	{
-		private List<Projectile> minions = new();
+		private readonly List<Projectile> minions = new();
 
 		public int MinionCount => (EffectiveLevel + 1) / 3 + 1;
 
