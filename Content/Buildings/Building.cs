@@ -218,6 +218,14 @@ namespace BrickAndMortar.Content.Buildings
 		public virtual void SetNextStatLines() { }
 
 		/// <summary>
+		/// Events which should happen when a building finishes upgrading. By default sends a congratulatory chat message.
+		/// </summary>
+		public virtual void OnBuildComplete()
+		{
+			Main.NewText($"{FriendlyName} has been upgraded to level {level + 1}!", Color.Yellow);
+		}
+
+		/// <summary>
 		/// Allows you to modify or override how the building is drawn. Base call draws a frame based on level and width/height.
 		/// </summary>
 		/// <param name="spriteBatch"></param>
@@ -308,6 +316,8 @@ namespace BrickAndMortar.Content.Buildings
 				level++;
 				underConstruction = false;
 				buildStartTime = 0;
+
+				OnBuildComplete();
 			}
 		}
 

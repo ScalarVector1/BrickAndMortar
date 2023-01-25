@@ -1,6 +1,6 @@
 ﻿using BrickAndMortar.Content.Buildings;
 
-namespace BrickAndMortar.Content.Hero
+namespace BrickAndMortar.Content.Heroes
 {
 	internal abstract class HeroAttack
 	{

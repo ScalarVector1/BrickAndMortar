@@ -1,14 +1,15 @@
 ﻿using BrickAndMortar.Content.Buildings;
 using System;
+using System.IO;
 using Terraria.ModLoader.IO;
 
-namespace BrickAndMortar.Content.Hero
+namespace BrickAndMortar.Content.Heroes
 {
 	internal abstract class Hero : ModNPC
 	{
 		public Building parent;
 
-		public Player following;
+		public int whoAmIFollowing;
 
 		public HeroAttack primaryAttack;
 		public HeroAttack secondaryAttack;
@@ -30,6 +31,8 @@ namespace BrickAndMortar.Content.Hero
 		/// Which attack the hero should be using. 0 = primary, 1 = secondary, 2 = active, -1 = nothing
 		/// </summary>
 		public ref float AttackState => ref NPC.ai[3];
+
+		public Player Following => Main.player[whoAmIFollowing];
 
 		public int Level => parent.level;
 
@@ -83,6 +86,17 @@ namespace BrickAndMortar.Content.Hero
 		public override bool PreAI()
 		{
 			return base.PreAI(); //Yes, I overrode this just for documentation.
+		}
+
+		//sync player target
+		public override void SendExtraAI(BinaryWriter writer)
+		{
+			writer.Write(whoAmIFollowing);
+		}
+
+		public override void ReceiveExtraAI(BinaryReader reader)
+		{
+			whoAmIFollowing = reader.Read();
 		}
 
 		//Save and load utility to remember which abilities this hero has. To be saved/loaded by the altar building's save/load methods.
