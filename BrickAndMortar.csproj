@@ -12,5 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\Misc\" />
+    <Folder Include="Content\Heroes\Heroes\" />
+    <Folder Include="Content\Heroes\HeroAttacks\" />
   </ItemGroup>
 </Project>
